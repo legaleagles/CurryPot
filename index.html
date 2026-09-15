@@ -3,225 +3,283 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Amma's Kitchen — Today's Thali</title>
+<title>Amma's Kitchen — Today's Counter</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#FFF8E7;
-    --ink:#2B1810;
-    --brick:#B8341F;
-    --leaf:#4A7C59;
-    --mustard:#E8A33D;
-    --steel:#8B8680;
-    --plate:#FFFDF5;
-    --font-display:'Fraunces', serif;
-    --font-body:'Karla', sans-serif;
+    --paper:#F6EFE1;
+    --ink:#241C15;
+    --rust:#9A3324;
+    --brass:#C8912B;
+    --steel:#6E655A;
+    --stub:#FFFCF4;
+    --line:#241C15;
+    --font-display:'Zilla Slab', serif;
+    --font-body:'Work Sans', sans-serif;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#20140D;
-      --ink:#F4EBDD;
-      --plate:#2B1E14;
-      --steel:#A99C8F;
+      --paper:#1C1712;
+      --ink:#EDE3D0;
+      --stub:#26201A;
+      --line:#EDE3D0;
+      --steel:#A79A85;
     }
   }
   :root[data-theme="dark"]{
-    --bg:#20140D;
-    --ink:#F4EBDD;
-    --plate:#2B1E14;
-    --steel:#A99C8F;
+    --paper:#1C1712;
+    --ink:#EDE3D0;
+    --stub:#26201A;
+    --line:#EDE3D0;
+    --steel:#A79A85;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    background:var(--bg);
+    background:var(--paper);
     color:var(--ink);
     font-family:var(--font-body);
-    padding-bottom:90px;
+    padding-bottom:96px;
   }
   header{
-    padding:28px 20px 20px;
-    border-bottom:3px solid var(--ink);
+    padding:34px 22px 22px;
+    position:relative;
   }
-  .eyebrow{
+  .token-no{
+    font-family:var(--font-display);
     font-size:0.85rem;
+    letter-spacing:0.06em;
     color:var(--steel);
   }
   h1{
     font-family:var(--font-display);
     font-weight:700;
-    font-size:2.3rem;
-    margin:4px 0 6px;
-    line-height:1.05;
+    font-size:2.6rem;
+    margin:2px 0 8px;
+    line-height:0.98;
+  }
+  h1 em{
+    font-style:normal;
+    color:var(--rust);
   }
   .tagline{
-    font-size:0.95rem;
+    font-size:0.98rem;
     color:var(--steel);
-    max-width:32ch;
+    max-width:34ch;
+    line-height:1.4;
   }
-  .chefpick{
-    margin:20px;
-    padding:16px;
-    border:2px dashed var(--brick);
-    border-radius:4px;
+  .rule{
+    height:0;
+    border-top:2px solid var(--line);
+    margin:22px 0 0;
+    position:relative;
+  }
+  .rule::after{
+    content:"";
+    position:absolute; left:0; right:0; top:5px;
+    border-top:1px solid var(--line);
+    opacity:0.35;
+  }
+  .special{
+    margin:24px 22px 0;
+    display:flex;
+    gap:16px;
+    align-items:center;
+    padding-bottom:22px;
+    border-bottom:1px dashed var(--steel);
+  }
+  .special img{
+    width:76px;height:76px;object-fit:cover;
+    border:2px solid var(--ink);
+  }
+  .special .kicker{
+    font-family:var(--font-display);
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    color:var(--rust);
+    text-transform:uppercase;
+  }
+  .special .name{
+    font-family:var(--font-display);
+    font-size:1.3rem;
+    font-weight:600;
+  }
+  section{padding:0 22px;margin-top:30px;}
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:16px;
+  }
+  .section-title{
+    font-family:var(--font-display);
+    font-size:1.2rem;
+    font-weight:700;
+  }
+  .section-time{
+    font-size:0.75rem;
+    color:var(--steel);
+  }
+  .chit{
     display:flex;
     gap:14px;
     align-items:center;
-  }
-  .chefpick img{
-    width:64px;height:64px;object-fit:cover;
-    border-radius:50%;
-    border:2px solid var(--mustard);
-  }
-  .chefpick .label{
-    font-size:0.75rem;
-    letter-spacing:0.03em;
-    color:var(--brick);
-    font-weight:700;
-  }
-  .chefpick .name{
-    font-family:var(--font-display);
-    font-size:1.15rem;
-    font-weight:700;
-  }
-  section{padding:0 20px;margin-top:26px;}
-  .section-title{
-    font-family:var(--font-display);
-    font-size:1.4rem;
-    font-weight:700;
-    border-bottom:2px solid var(--ink);
-    padding-bottom:6px;
-    margin-bottom:14px;
-  }
-  .grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-  }
-  .item{
-    background:var(--plate);
-    border:1px solid var(--steel);
-    border-radius:50% / 8%;
-    padding:14px 12px 16px;
-    text-align:center;
+    padding:14px 0;
+    border-bottom:1px solid var(--steel);
     position:relative;
   }
-  .item img{
-    width:100%;
-    aspect-ratio:1/1;
-    object-fit:cover;
-    border-radius:50%;
-    border:3px solid var(--bg);
-    outline:1px solid var(--steel);
-    margin-bottom:8px;
+  .chit.soldout{opacity:0.4;}
+  .chit img{
+    width:58px;height:58px;object-fit:cover;
+    border:1px solid var(--ink);
+    flex-shrink:0;
   }
-  .item .name{
-    font-weight:700;
-    font-size:0.95rem;
-    margin-bottom:2px;
+  .chit-info{flex:1;min-width:0;}
+  .chit-name{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.05rem;
   }
-  .item .price{
-    color:var(--brick);
-    font-weight:700;
-    font-size:0.9rem;
+  .chit-price{
+    font-size:0.85rem;
+    color:var(--rust);
+    font-weight:600;
+    margin-top:1px;
   }
-  .item.soldout{opacity:0.45;}
-  .item.soldout::after{
-    content:"Sold out";
-    position:absolute;top:8px;right:8px;
-    background:var(--ink);color:var(--bg);
-    font-size:0.65rem;padding:2px 6px;border-radius:3px;
+  .chit-status{
+    font-size:0.7rem;
+    color:var(--steel);
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    margin-top:2px;
   }
   .qty{
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    margin-top:8px;
+    display:flex;align-items:center;gap:10px;
+    flex-shrink:0;
   }
   .qty button{
-    width:28px;height:28px;border-radius:50%;
+    width:30px;height:30px;
     border:1px solid var(--ink);background:transparent;
-    color:var(--ink);font-size:1rem;cursor:pointer;
+    color:var(--ink);font-size:1.1rem;cursor:pointer;
+    font-family:var(--font-body);
+    line-height:1;
   }
-  .qty span{min-width:16px;font-weight:700;}
+  .qty span{min-width:14px;text-align:center;font-weight:600;}
   .cartbar{
     position:fixed;bottom:0;left:0;right:0;
-    background:var(--ink);color:var(--bg);
-    padding:14px 20px;
+    background:var(--ink);color:var(--paper);
+    padding:16px 22px;
     display:flex;justify-content:space-between;align-items:center;
-    font-family:var(--font-body);
     transform:translateY(100%);
     transition:transform 0.25s ease;
+    border-top:3px solid var(--brass);
   }
   .cartbar.show{transform:translateY(0);}
-  .cartbar .count{font-weight:700;}
+  .cartbar .count{
+    font-family:var(--font-display);
+    font-weight:600;
+  }
   .cartbar button{
-    background:var(--mustard);color:var(--ink);
-    border:none;padding:10px 18px;border-radius:4px;
-    font-weight:700;font-family:var(--font-body);
+    background:var(--brass);color:var(--ink);
+    border:none;padding:11px 20px;
+    font-weight:600;font-family:var(--font-body);
     cursor:pointer;
+    letter-spacing:0.01em;
   }
   .modal{
-    position:fixed;inset:0;background:rgba(0,0,0,0.5);
+    position:fixed;inset:0;background:rgba(20,15,10,0.55);
     display:none;align-items:flex-end;justify-content:center;
     z-index:10;
   }
   .modal.show{display:flex;}
   .sheet{
-    background:var(--bg);color:var(--ink);
+    background:var(--stub);color:var(--ink);
     width:100%;max-width:480px;
-    border-radius:16px 16px 0 0;
-    padding:22px 20px 28px;
+    padding:26px 24px 30px;
+    position:relative;
+    border-top:3px solid var(--rust);
   }
-  .sheet h2{font-family:var(--font-display);margin-top:0;}
+  .sheet h2{
+    font-family:var(--font-display);
+    font-weight:700;
+    margin:0 0 4px;
+    font-size:1.4rem;
+  }
+  .sheet .sub{
+    font-size:0.8rem;color:var(--steel);margin-bottom:16px;
+  }
+  #orderLines{
+    font-family:var(--font-display);
+    font-size:0.95rem;
+    border-top:1px dashed var(--steel);
+    border-bottom:1px dashed var(--steel);
+    padding:12px 0;
+    margin-bottom:6px;
+  }
+  #orderLines > div{
+    display:flex;justify-content:space-between;
+    padding:3px 0;
+  }
   .sheet label{
-    display:block;font-size:0.85rem;color:var(--steel);margin:14px 0 6px;
+    display:block;font-size:0.78rem;color:var(--steel);
+    text-transform:uppercase;letter-spacing:0.05em;
+    margin:16px 0 7px;
   }
   .slots{display:flex;gap:8px;flex-wrap:wrap;}
   .slot{
-    border:1px solid var(--ink);padding:8px 12px;border-radius:20px;
+    border:1px solid var(--ink);padding:8px 13px;
     cursor:pointer;font-size:0.85rem;
   }
-  .slot.active{background:var(--brick);color:var(--bg);border-color:var(--brick);}
+  .slot.active{background:var(--rust);color:var(--stub);border-color:var(--rust);}
   input[type=text]{
-    width:100%;padding:10px;border:1px solid var(--steel);
-    border-radius:6px;font-family:var(--font-body);font-size:1rem;
-    background:var(--plate);color:var(--ink);
+    width:100%;padding:11px;border:1px solid var(--steel);
+    font-family:var(--font-body);font-size:1rem;
+    background:var(--paper);color:var(--ink);
   }
   .sendbtn{
-    width:100%;margin-top:18px;padding:14px;
-    background:var(--leaf);color:#fff;border:none;border-radius:8px;
-    font-weight:700;font-size:1rem;cursor:pointer;
+    width:100%;margin-top:20px;padding:15px;
+    background:var(--ink);color:var(--stub);border:none;
+    font-weight:600;font-size:1rem;cursor:pointer;
+    letter-spacing:0.01em;
   }
   .close{
-    position:absolute;top:16px;right:20px;
-    background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--ink);
+    position:absolute;top:18px;right:22px;
+    background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--ink);
   }
-  .sheet{position:relative;}
   footer{
-    text-align:center;font-size:0.75rem;color:var(--steel);
-    padding:30px 20px 10px;
+    text-align:center;font-size:0.72rem;color:var(--steel);
+    padding:36px 22px 14px;
+    letter-spacing:0.03em;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="eyebrow" id="dateLabel">Today's board</div>
-  <h1>Amma's Kitchen</h1>
-  <p class="tagline">Home-style curries, made fresh each morning. Order ahead, walk in, collect warm.</p>
+  <div class="token-no" id="dateLabel">Counter open</div>
+  <h1>Amma's <em>Kitchen</em></h1>
+  <p class="tagline">Home-style curries, cooked fresh each morning by hand. No delivery — you book, we plate it warm for pickup.</p>
+  <div class="rule"></div>
 </header>
 
-<div class="chefpick" id="chefPick"></div>
+<div class="special" id="chefPick"></div>
 
 <section>
-  <div class="section-title">Breakfast board</div>
-  <div class="grid" id="breakfastGrid"></div>
+  <div class="section-head">
+    <div class="section-title">Breakfast counter</div>
+    <div class="section-time">7 – 11 AM</div>
+  </div>
+  <div id="breakfastGrid"></div>
 </section>
 
 <section>
-  <div class="section-title">Lunch board</div>
-  <div class="grid" id="lunchGrid"></div>
+  <div class="section-head">
+    <div class="section-title">Lunch counter</div>
+    <div class="section-time">12 – 3 PM</div>
+  </div>
+  <div id="lunchGrid"></div>
 </section>
 
 <div class="cartbar" id="cartbar">
@@ -232,17 +290,18 @@
 <div class="modal" id="modal">
   <div class="sheet">
     <button class="close" id="closeModal">&times;</button>
-    <h2>Confirm your pickup</h2>
-    <div id="orderLines" style="font-size:0.9rem;"></div>
-    <label for="nameInput">Your name</label>
+    <h2>Your order chit</h2>
+    <div class="sub">Confirm and we'll have it ready at your chosen time.</div>
+    <div id="orderLines"></div>
+    <label for="nameInput">Name for the counter</label>
     <input type="text" id="nameInput" placeholder="e.g. Priya">
     <label>Pickup time</label>
     <div class="slots" id="slots"></div>
-    <button class="sendbtn" id="sendBtn">Send order on WhatsApp</button>
+    <button class="sendbtn" id="sendBtn">Send to WhatsApp</button>
   </div>
 </div>
 
-<footer>Amma's Kitchen · updated daily · pickup only, no delivery</footer>
+<footer>AMMA'S KITCHEN — MENU UPDATED DAILY — PICKUP ONLY</footer>
 
 <script>
 const cart = {};
@@ -263,14 +322,14 @@ async function loadMenu(){
     PHONE = data.phoneWhatsApp || PHONE;
     SLOTS = data.pickupSlots || SLOTS;
 
-    document.getElementById('dateLabel').textContent = "Today's board — " + fmtDate();
+    document.getElementById('dateLabel').textContent = fmtDate();
 
     const pick = [...menu.breakfast, ...menu.lunch].find(i => i.id === data.chefPick);
     if(pick){
       document.getElementById('chefPick').innerHTML = `
         <img src="${pick.img}" alt="${pick.name}">
         <div>
-          <div class="label">Chef's pick today</div>
+          <div class="kicker">Today's special</div>
           <div class="name">${pick.name}</div>
         </div>
       `;
@@ -278,8 +337,8 @@ async function loadMenu(){
       document.getElementById('chefPick').style.display = 'none';
     }
 
-    renderGrid(menu.breakfast, 'breakfastGrid');
-    renderGrid(menu.lunch, 'lunchGrid');
+    renderList(menu.breakfast, 'breakfastGrid');
+    renderList(menu.lunch, 'lunchGrid');
     renderSlots();
   } catch(err){
     document.getElementById('dateLabel').textContent = "Menu couldn't load — check menu-today.json";
@@ -287,13 +346,16 @@ async function loadMenu(){
   }
 }
 
-function renderGrid(list, elId){
+function renderList(list, elId){
   const el = document.getElementById(elId);
   el.innerHTML = list.map(item => `
-    <div class="item ${item.available ? '' : 'soldout'}" data-id="${item.id}">
+    <div class="chit ${item.available ? '' : 'soldout'}" data-id="${item.id}">
       <img src="${item.img}" alt="${item.name}">
-      <div class="name">${item.name}</div>
-      <div class="price">₹${item.price}</div>
+      <div class="chit-info">
+        <div class="chit-name">${item.name}</div>
+        <div class="chit-price">₹${item.price}</div>
+        ${item.available ? '' : '<div class="chit-status">Sold out today</div>'}
+      </div>
       ${item.available ? `
       <div class="qty">
         <button class="dec" data-id="${item.id}">−</button>
@@ -303,6 +365,7 @@ function renderGrid(list, elId){
     </div>
   `).join('');
 }
+
 function findItem(id){ return [...menu.breakfast, ...menu.lunch].find(i => i.id === id); }
 
 function updateCartBar(){
@@ -326,10 +389,10 @@ document.body.addEventListener('click', (e) => {
 document.getElementById('cartBtn').addEventListener('click', () => {
   const lines = Object.entries(cart).filter(([id,q]) => q > 0).map(([id,q]) => {
     const item = findItem(id);
-    return `<div>${item.name} × ${q} — ₹${item.price * q}</div>`;
+    return `<div><span>${item.name} × ${q}</span><span>₹${item.price * q}</span></div>`;
   });
   const total = Object.entries(cart).reduce((sum,[id,q]) => sum + (findItem(id)?.price || 0) * q, 0);
-  lines.push(`<div style="margin-top:8px;font-weight:700;border-top:1px solid var(--steel);padding-top:6px;">Total: ₹${total}</div>`);
+  lines.push(`<div style="font-weight:700;border-top:1px solid var(--ink);margin-top:4px;padding-top:6px;"><span>Total</span><span>₹${total}</span></div>`);
   document.getElementById('orderLines').innerHTML = lines.join('');
   document.getElementById('modal').classList.add('show');
 });
