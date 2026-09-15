@@ -11,8 +11,9 @@ Daily menu board + WhatsApp pickup booking for a local curry-point business.
 1. Open `menu-today.json` in GitHub (or the GitHub mobile app).
 2. Edit the `date`, `chefPick` (must match an item `id`), and the `breakfast` / `lunch` arrays:
    - `available: false` shows the item greyed out with a "Sold out" tag instead of removing it.
+   - `veg: true` shows a green dot marker; `veg: false` shows the standard red/brown non-veg marker.
    - `price` is a plain number (rupees, no symbol).
-   - `img` points to a file in `images/`.
+   - `img` points to a file in `images/`, or leave it `""` to use an automatic photo.
 3. Commit the change directly on the `main` branch — GitHub Pages redeploys automatically in under a minute.
 
 ## Photos

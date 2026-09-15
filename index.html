@@ -137,6 +137,32 @@
     flex-shrink:0;
   }
   .chit-info{flex:1;min-width:0;}
+  .veg-mark{
+    display:inline-block;
+    width:12px;height:12px;
+    border:1.5px solid;
+    vertical-align:middle;
+    margin-right:6px;
+    position:relative;
+  }
+  .veg-mark.veg{border-color:#2E7D32;}
+  .veg-mark.veg::after{
+    content:"";
+    position:absolute;top:50%;left:50%;
+    width:6px;height:6px;border-radius:50%;
+    background:#2E7D32;
+    transform:translate(-50%,-50%);
+  }
+  .veg-mark.nonveg{border-color:#9A3324;}
+  .veg-mark.nonveg::after{
+    content:"";
+    position:absolute;top:50%;left:50%;
+    width:0;height:0;
+    border-left:4px solid transparent;
+    border-right:4px solid transparent;
+    border-bottom:6px solid #9A3324;
+    transform:translate(-50%,-45%);
+  }
   .chit-name{
     font-family:var(--font-display);
     font-weight:600;
@@ -306,7 +332,7 @@
 <script>
 const cart = {};
 let menu = { breakfast: [], lunch: [] };
-let PHONE = '910000000000';
+let PHONE = '918106799883';
 let SLOTS = ['12:30 PM','1:00 PM','1:30 PM','2:00 PM'];
 
 function fmtDate(){
@@ -329,10 +355,10 @@ async function loadMenu(){
       document.getElementById('chefPick').innerHTML = `
         <img src="${pick.img && pick.img.trim() ? pick.img : defaultImageFor(pick.name)}"
              alt="${pick.name}"
-             onerror="this.onerror=null;this.src='${defaultImageFor(pick.name)}';">
+             onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';">
         <div>
           <div class="kicker">Today's special</div>
-          <div class="name">${pick.name}</div>
+          <div class="name"><span class="veg-mark ${pick.veg === false ? 'nonveg' : 'veg'}"></span>${pick.name}</div>
         </div>
       `;
     } else {
@@ -351,23 +377,22 @@ async function loadMenu(){
 // Curated stock photos for common South Indian dishes, used whenever
 // menu-today.json leaves "img" blank or a custom path fails to load.
 // The owner can always override by pointing "img" at their own file in images/.
+// A small set of verified-loading stock photos, reused sensibly by dish
+// category. The owner can override any item with their own photo in images/ —
+// these are just safe, pleasant defaults until then.
+const IDLY_IMG   = 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=200&h=200&fit=crop&q=60';
+const DOSA_IMG   = 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=200&h=200&fit=crop&q=60';
+const CURRY_IMG  = 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=200&h=200&fit=crop&q=60';
+const RICE_IMG   = 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=200&h=200&fit=crop&q=60';
+
 const DEFAULT_IMAGES = [
-  [['idly','idli'], 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=200&h=200&fit=crop&q=60'],
-  [['vada'], 'https://images.unsplash.com/photo-1626132647523-66b71bff042e?w=200&h=200&fit=crop&q=60'],
-  [['masala dosa'], 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=200&h=200&fit=crop&q=60'],
-  [['dosa','uttapam'], 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=200&h=200&fit=crop&q=60'],
-  [['poori','puri'], 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=200&h=200&fit=crop&q=60'],
-  [['pongal'], 'https://images.unsplash.com/photo-1589301773859-449a1fdbb230?w=200&h=200&fit=crop&q=60'],
-  [['chicken biryani','chicken dum'], 'https://images.unsplash.com/photo-1633945274309-2a3f7f2a3b34?w=200&h=200&fit=crop&q=60'],
-  [['egg biryani'], 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=200&h=200&fit=crop&q=60'],
-  [['paneer biryani','paneer'], 'https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=200&h=200&fit=crop&q=60'],
-  [['biryani'], 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200&h=200&fit=crop&q=60'],
-  [['sambar'], 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=200&h=200&fit=crop&q=60'],
-  [['chicken curry','chicken fry','chicken'], 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=200&h=200&fit=crop&q=60'],
-  [['egg'], 'https://images.unsplash.com/photo-1607690424560-35d967d6ad7d?w=200&h=200&fit=crop&q=60'],
-  [['rice'], 'https://images.unsplash.com/photo-1596560548464-f010549b84d7?w=200&h=200&fit=crop&q=60'],
+  [['idly','idli','vada'], IDLY_IMG],
+  [['dosa','uttapam'], DOSA_IMG],
+  [['poori','puri','pongal','sambar'], CURRY_IMG],
+  [['paneer','veg curry','pappu','curry'], CURRY_IMG],
+  [['biryani','chicken','egg','rice','pulao'], RICE_IMG],
 ];
-const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=200&h=200&fit=crop&q=60';
+const FALLBACK_IMAGE = CURRY_IMG;
 
 function defaultImageFor(name){
   const n = (name || '').toLowerCase();
@@ -383,9 +408,9 @@ function renderList(list, elId){
     <div class="chit ${item.available ? '' : 'soldout'}" data-id="${item.id}">
       <img src="${item.img && item.img.trim() ? item.img : defaultImageFor(item.name)}"
            alt="${item.name}"
-           onerror="this.onerror=null;this.src='${defaultImageFor(item.name)}';">
+           onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';">
       <div class="chit-info">
-        <div class="chit-name">${item.name}</div>
+        <div class="chit-name"><span class="veg-mark ${item.veg === false ? 'nonveg' : 'veg'}"></span>${item.name}</div>
         <div class="chit-price">₹${item.price}</div>
         ${item.available ? '' : '<div class="chit-status">Sold out today</div>'}
       </div>

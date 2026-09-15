@@ -1,18 +1,18 @@
 {
   "date": "2026-09-15",
   "chefPick": "chickenbiryani",
-  "phoneWhatsApp": "910000000000",
+  "phoneWhatsApp": "918106799883",
   "pickupSlots": ["12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM"],
   "breakfast": [
-    {"id":"idly", "name":"Idly", "price":40, "img":"", "available":true},
-    {"id":"gheeidly", "name":"Ghee Karam Idly", "price":60, "img":"", "available":true},
-    {"id":"vada", "name":"Vada", "price":35, "img":"", "available":true},
-    {"id":"masaladosa", "name":"Masala Dosa", "price":70, "img":"", "available":false}
+    {"id":"idly", "name":"Idly", "price":40, "img":"", "veg":true, "available":true},
+    {"id":"gheeidly", "name":"Ghee Karam Idly", "price":60, "img":"", "veg":true, "available":true},
+    {"id":"vada", "name":"Vada", "price":35, "img":"", "veg":true, "available":true},
+    {"id":"masaladosa", "name":"Masala Dosa", "price":70, "img":"", "veg":true, "available":false}
   ],
   "lunch": [
-    {"id":"chickenbiryani", "name":"Chicken Dum Biryani", "price":180, "img":"", "available":true},
-    {"id":"eggbiryani", "name":"Egg Biryani", "price":120, "img":"", "available":true},
-    {"id":"paneerbiryani", "name":"Paneer Biryani", "price":140, "img":"", "available":true},
-    {"id":"sambar", "name":"Sambar (bowl)", "price":40, "img":"", "available":true}
+    {"id":"chickenbiryani", "name":"Chicken Dum Biryani", "price":180, "img":"", "veg":false, "available":true},
+    {"id":"eggbiryani", "name":"Egg Biryani", "price":120, "img":"", "veg":false, "available":true},
+    {"id":"paneerbiryani", "name":"Paneer Biryani", "price":140, "img":"", "veg":true, "available":true},
+    {"id":"sambar", "name":"Sambar (bowl)", "price":40, "img":"", "veg":true, "available":true}
   ]
 }
