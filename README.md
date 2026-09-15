@@ -10,7 +10,7 @@ Daily menu board + WhatsApp pickup booking for a local curry-point business.
 ## Updating the menu each day
 
 **Easiest way — the Menu Setting page:**
-Go to `https://legaleagles.github.io/CurryPot/admin.html`. Fill in each item's name, price, veg/non-veg, and whether it's available today, pick a special, paste your GitHub token, and hit **Publish today's menu**. It writes straight to `menu-today.json` and the live site updates in a minute or two.
+Go to `https://legaleagles.github.io/CurryPot/admin.html`. It loads today's live menu so you're editing, not starting blank. For each item you can change the name, price, veg/non-veg, availability, and optionally choose a photo from your phone — it uploads straight into `images/` when you publish. Pick a special, paste your GitHub token, and hit **Publish today's menu**.
 
 You'll need a GitHub Personal Access Token with write access to this repo — generate one under GitHub Settings → Developer settings → Personal access tokens (fine-grained, scoped to this repo, Contents: Read and write). Paste it fresh each time you publish; the page never saves it.
 

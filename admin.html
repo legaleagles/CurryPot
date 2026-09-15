@@ -103,19 +103,28 @@ const FILE_PATH = 'menu-today.json';
 
 let itemCounter = 0;
 
-function itemCardHTML(section, name='', price='', veg=true, available=true){
+function itemCardHTML(section, name='', price='', veg=true, available=true, existingImg=''){
   const id = 'item_' + (itemCounter++);
+  const thumbSrc = existingImg || '';
+  const thumbDisplay = existingImg ? 'block' : 'none';
   return `
-    <div class="item-card" data-id="${id}" data-section="${section}">
+    <div class="item-card" data-id="${id}" data-section="${section}" data-existing-img="${existingImg}">
       <button class="del" onclick="this.closest('.item-card').remove(); refreshChefPickOptions();">&times;</button>
-      <div class="field">
-        <label>Item name</label>
-        <input type="text" class="f-name" value="${name}" oninput="refreshChefPickOptions()">
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>Price (₹)</label>
-          <input type="number" class="f-price" value="${price}">
+      <div class="row" style="align-items:flex-start;">
+        <div style="flex:0 0 72px;">
+          <img class="f-thumb" src="${thumbSrc}" alt="" style="width:72px;height:72px;object-fit:cover;border:1px solid var(--steel);display:${thumbDisplay};background:var(--paper);">
+          <label style="margin-top:6px;">Photo</label>
+          <input type="file" accept="image/*" class="f-photo" onchange="previewPhoto(this)">
+        </div>
+        <div style="flex:1;">
+          <div class="field">
+            <label>Item name</label>
+            <input type="text" class="f-name" value="${name}" oninput="refreshChefPickOptions()">
+          </div>
+          <div class="field">
+            <label>Price (₹)</label>
+            <input type="number" class="f-price" value="${price}">
+          </div>
         </div>
       </div>
       <div class="toggles">
@@ -126,6 +135,35 @@ function itemCardHTML(section, name='', price='', veg=true, available=true){
   `;
 }
 
+function previewPhoto(input){
+  const card = input.closest('.item-card');
+  const thumb = card.querySelector('.f-thumb');
+  const file = input.files[0];
+  if(!file) { thumb.style.display = card.dataset.existingImg ? 'block' : 'none'; if(card.dataset.existingImg) thumb.src = card.dataset.existingImg; return; }
+  const reader = new FileReader();
+  reader.onload = e => { thumb.src = e.target.result; thumb.style.display = 'block'; };
+  reader.readAsDataURL(file);
+}
+
+async function loadCurrentMenu(){
+  try{
+    const res = await fetch('menu-today.json?t=' + Date.now(), {cache:'no-store'});
+    const data = await res.json();
+    (data.breakfast || []).forEach(i => document.getElementById('breakfastItems').insertAdjacentHTML('beforeend', itemCardHTML('breakfast', i.name, i.price, i.veg !== false, i.available !== false, i.img || '')));
+    (data.lunch || []).forEach(i => document.getElementById('lunchItems').insertAdjacentHTML('beforeend', itemCardHTML('lunch', i.name, i.price, i.veg !== false, i.available !== false, i.img || '')));
+    document.getElementById('phoneInput').value = data.phoneWhatsApp || '918106799883';
+    document.getElementById('slotsInput').value = (data.pickupSlots || ['12:30 PM','1:00 PM','1:30 PM','2:00 PM']).join(', ');
+    refreshChefPickOptions();
+    document.getElementById('chefPickSelect').value = data.chefPick || '';
+  } catch(err){
+    // fall back to empty form if menu-today.json can't be read
+    document.getElementById('phoneInput').value = '918106799883';
+    document.getElementById('slotsInput').value = '12:30 PM, 1:00 PM, 1:30 PM, 2:00 PM';
+    console.error('Could not load current menu', err);
+  }
+}
+loadCurrentMenu();
+
 document.getElementById('addBreakfast').addEventListener('click', () => {
   document.getElementById('breakfastItems').insertAdjacentHTML('beforeend', itemCardHTML('breakfast'));
 });
@@ -133,23 +171,7 @@ document.getElementById('addLunch').addEventListener('click', () => {
   document.getElementById('lunchItems').insertAdjacentHTML('beforeend', itemCardHTML('lunch'));
 });
 
-// seed with today's current items so you're editing, not starting blank
-const seedBreakfast = [
-  {name:'Idly', price:40, veg:true, available:true},
-  {name:'Ghee Karam Idly', price:60, veg:true, available:true},
-  {name:'Vada', price:35, veg:true, available:true},
-  {name:'Masala Dosa', price:70, veg:true, available:false},
-];
-const seedLunch = [
-  {name:'Chicken Dum Biryani', price:180, veg:false, available:true},
-  {name:'Egg Biryani', price:120, veg:false, available:true},
-  {name:'Paneer Biryani', price:140, veg:true, available:true},
-  {name:'Sambar (bowl)', price:40, veg:true, available:true},
-];
-seedBreakfast.forEach(i => document.getElementById('breakfastItems').insertAdjacentHTML('beforeend', itemCardHTML('breakfast', i.name, i.price, i.veg, i.available)));
-seedLunch.forEach(i => document.getElementById('lunchItems').insertAdjacentHTML('beforeend', itemCardHTML('lunch', i.name, i.price, i.veg, i.available)));
-document.getElementById('phoneInput').value = '918106799883';
-document.getElementById('slotsInput').value = '12:30 PM, 1:00 PM, 1:30 PM, 2:00 PM';
+// current menu is loaded dynamically via loadCurrentMenu() below
 
 function slugify(name){
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '');
@@ -161,7 +183,10 @@ function collectItems(sectionId){
     const price = parseInt(card.querySelector('.f-price').value, 10) || 0;
     const veg = card.querySelector('.f-veg').checked;
     const available = card.querySelector('.f-available').checked;
-    return { id: slugify(name), name, price, img: '', veg, available };
+    const fileInput = card.querySelector('.f-photo');
+    const file = fileInput.files[0] || null;
+    const existingImg = card.dataset.existingImg || '';
+    return { id: slugify(name), name, price, img: existingImg, veg, available, _file: file };
   }).filter(i => i.name);
 }
 
@@ -180,6 +205,45 @@ function todayISO(){
   return new Date().toISOString().slice(0,10);
 }
 
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadImage(token, item){
+  const ext = (item._file.name.split('.').pop() || 'jpg').toLowerCase();
+  const path = `images/${item.id}.${ext}`;
+  const base64 = await fileToBase64(item._file);
+
+  // check if a file already exists at this path (need its sha to overwrite)
+  let sha;
+  const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
+  });
+  if(getRes.ok){
+    const getData = await getRes.json();
+    sha = getData.sha;
+  }
+
+  const body = { message: `Update photo for ${item.name}`, content: base64 };
+  if(sha) body.sha = sha;
+
+  const putRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' },
+    body: JSON.stringify(body)
+  });
+  if(!putRes.ok){
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(`Photo upload failed for "${item.name}": ` + (err.message || putRes.status));
+  }
+  return path;
+}
+
 async function publish(){
   const statusBox = document.getElementById('statusBox');
   statusBox.className = 'status';
@@ -190,22 +254,35 @@ async function publish(){
     return;
   }
 
-  const data = {
-    date: todayISO(),
-    chefPick: document.getElementById('chefPickSelect').value,
-    phoneWhatsApp: document.getElementById('phoneInput').value.trim(),
-    pickupSlots: document.getElementById('slotsInput').value.split(',').map(s => s.trim()).filter(Boolean),
-    breakfast: collectItems('breakfastItems'),
-    lunch: collectItems('lunchItems'),
-  };
-
-  const jsonText = JSON.stringify(data, null, 2);
   const btn = document.getElementById('publishBtn');
   btn.disabled = true;
-  btn.textContent = 'Publishing...';
 
   try {
-    // get current file SHA (required by GitHub API to update a file)
+    const breakfast = collectItems('breakfastItems');
+    const lunch = collectItems('lunchItems');
+    const allItems = [...breakfast, ...lunch];
+
+    // upload any newly chosen photos first
+    for(const item of allItems){
+      if(item._file){
+        btn.textContent = `Uploading photo: ${item.name}...`;
+        item.img = await uploadImage(token, item);
+      }
+      delete item._file;
+    }
+
+    const data = {
+      date: todayISO(),
+      chefPick: document.getElementById('chefPickSelect').value,
+      phoneWhatsApp: document.getElementById('phoneInput').value.trim(),
+      pickupSlots: document.getElementById('slotsInput').value.split(',').map(s => s.trim()).filter(Boolean),
+      breakfast,
+      lunch,
+    };
+    const jsonText = JSON.stringify(data, null, 2);
+
+    btn.textContent = 'Publishing menu...';
+
     const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
       headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
     });
