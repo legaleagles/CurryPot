@@ -64,7 +64,16 @@
   <div class="sub">Update today's board — this publishes straight to the live site.</div>
 </header>
 
-<section>
+<div id="gate" style="padding:40px 24px;max-width:400px;margin:0 auto;">
+  <div class="field">
+    <label for="gatePassword">Staff password</label>
+    <input type="password" id="gatePassword" placeholder="Enter password">
+  </div>
+  <button class="publish-btn" id="gateBtn" style="margin-top:4px;">Unlock</button>
+  <div class="status" id="gateStatus"></div>
+</div>
+
+<section id="mainForm" style="display:none;">
   <div class="field">
     <label for="chefPickSelect">Today's special</label>
     <select id="chefPickSelect"><option value="">— pick after adding items —</option></select>
@@ -89,19 +98,36 @@
   <button class="add-btn" id="addLunch">+ Add lunch item</button>
 
   <div class="publish-box">
-    <label for="tokenInput">GitHub token (entered fresh each time, never saved)</label>
-    <input type="password" id="tokenInput" placeholder="paste your PAT here">
-    <p>This publishes menu-today.json directly to the live site. The token is used only for this one action and isn't stored anywhere.</p>
+    <label for="tokenInput">Publish key</label>
+    <input type="password" id="tokenInput" placeholder="paste your GitHub token here">
+    <p>This is the technical key that lets the page save changes to the live site — entered fresh each time, never saved. Ask Durga if you don't have this.</p>
     <button class="publish-btn" id="publishBtn">Publish today's menu</button>
     <div class="status" id="statusBox"></div>
   </div>
 </section>
 
 <script>
+const STAFF_PASSWORD = 'Teacher#9'; // change this any time — it's just a friendly gate, not real security
+
+document.getElementById('gateBtn').addEventListener('click', () => {
+  const entered = document.getElementById('gatePassword').value;
+  const gateStatus = document.getElementById('gateStatus');
+  if(entered === STAFF_PASSWORD){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('mainForm').style.display = 'block';
+  } else {
+    gateStatus.className = 'status err';
+    gateStatus.textContent = 'Wrong password.';
+  }
+});
+</script>
+
+<script>
 const REPO = 'legaleagles/CurryPot';
 const FILE_PATH = 'menu-today.json';
 
 let itemCounter = 0;
+
 
 function itemCardHTML(section, name='', price='', veg=true, available=true, existingImg=''){
   const id = 'item_' + (itemCounter++);
