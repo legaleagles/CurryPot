@@ -15,8 +15,10 @@ Daily menu board + WhatsApp pickup booking for a local curry-point business.
    - `img` points to a file in `images/`.
 3. Commit the change directly on the `main` branch — GitHub Pages redeploys automatically in under a minute.
 
-## Adding a photo
-Upload the image file into `images/` (GitHub → Add file → Upload files), then reference its filename in `menu-today.json`.
+## Photos
+The site automatically shows a matching stock photo for common dishes (idly, vada, dosa, biryani, sambar, etc.) when `img` is left as `""` — so it looks good from day one even with no photos uploaded.
+
+To use your own photo instead: upload the image file into `images/` (GitHub → Add file → Upload files), then set that item's `img` in `menu-today.json` to `images/yourfile.jpg`. If that file is ever missing or fails to load, the site quietly falls back to the stock photo instead of showing a broken image.
 
 ## Setting the WhatsApp number
 Edit `phoneWhatsApp` in `menu-today.json` — country code, no `+` or spaces (e.g. `919876543210`).

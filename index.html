@@ -327,7 +327,9 @@ async function loadMenu(){
     const pick = [...menu.breakfast, ...menu.lunch].find(i => i.id === data.chefPick);
     if(pick){
       document.getElementById('chefPick').innerHTML = `
-        <img src="${pick.img}" alt="${pick.name}">
+        <img src="${pick.img && pick.img.trim() ? pick.img : defaultImageFor(pick.name)}"
+             alt="${pick.name}"
+             onerror="this.onerror=null;this.src='${defaultImageFor(pick.name)}';">
         <div>
           <div class="kicker">Today's special</div>
           <div class="name">${pick.name}</div>
@@ -346,11 +348,42 @@ async function loadMenu(){
   }
 }
 
+// Curated stock photos for common South Indian dishes, used whenever
+// menu-today.json leaves "img" blank or a custom path fails to load.
+// The owner can always override by pointing "img" at their own file in images/.
+const DEFAULT_IMAGES = [
+  [['idly','idli'], 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=200&h=200&fit=crop&q=60'],
+  [['vada'], 'https://images.unsplash.com/photo-1626132647523-66b71bff042e?w=200&h=200&fit=crop&q=60'],
+  [['masala dosa'], 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=200&h=200&fit=crop&q=60'],
+  [['dosa','uttapam'], 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=200&h=200&fit=crop&q=60'],
+  [['poori','puri'], 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=200&h=200&fit=crop&q=60'],
+  [['pongal'], 'https://images.unsplash.com/photo-1589301773859-449a1fdbb230?w=200&h=200&fit=crop&q=60'],
+  [['chicken biryani','chicken dum'], 'https://images.unsplash.com/photo-1633945274309-2a3f7f2a3b34?w=200&h=200&fit=crop&q=60'],
+  [['egg biryani'], 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=200&h=200&fit=crop&q=60'],
+  [['paneer biryani','paneer'], 'https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=200&h=200&fit=crop&q=60'],
+  [['biryani'], 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200&h=200&fit=crop&q=60'],
+  [['sambar'], 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=200&h=200&fit=crop&q=60'],
+  [['chicken curry','chicken fry','chicken'], 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=200&h=200&fit=crop&q=60'],
+  [['egg'], 'https://images.unsplash.com/photo-1607690424560-35d967d6ad7d?w=200&h=200&fit=crop&q=60'],
+  [['rice'], 'https://images.unsplash.com/photo-1596560548464-f010549b84d7?w=200&h=200&fit=crop&q=60'],
+];
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=200&h=200&fit=crop&q=60';
+
+function defaultImageFor(name){
+  const n = (name || '').toLowerCase();
+  for(const [keywords, url] of DEFAULT_IMAGES){
+    if(keywords.some(k => n.includes(k))) return url;
+  }
+  return FALLBACK_IMAGE;
+}
+
 function renderList(list, elId){
   const el = document.getElementById(elId);
   el.innerHTML = list.map(item => `
     <div class="chit ${item.available ? '' : 'soldout'}" data-id="${item.id}">
-      <img src="${item.img}" alt="${item.name}">
+      <img src="${item.img && item.img.trim() ? item.img : defaultImageFor(item.name)}"
+           alt="${item.name}"
+           onerror="this.onerror=null;this.src='${defaultImageFor(item.name)}';">
       <div class="chit-info">
         <div class="chit-name">${item.name}</div>
         <div class="chit-price">₹${item.price}</div>
