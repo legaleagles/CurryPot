@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amma's Kitchen — Menu Setting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6EFE1; --ink:#241C15; --rust:#9A3324; --brass:#C8912B;
+    --steel:#6E655A; --stub:#FFFCF4; --good:#2E7D32; --bad:#9A3324;
+    --font-display:'Zilla Slab', serif; --font-body:'Work Sans', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);padding-bottom:60px;}
+  header{padding:26px 20px 18px;border-bottom:2px solid var(--ink);}
+  h1{font-family:var(--font-display);font-size:1.7rem;margin:0 0 4px;}
+  .sub{font-size:0.85rem;color:var(--steel);}
+  section{padding:20px;max-width:640px;margin:0 auto;}
+  .field{margin-bottom:16px;}
+  label{display:block;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--steel);margin-bottom:6px;}
+  input[type=text],input[type=number],input[type=password]{
+    width:100%;padding:10px;border:1px solid var(--steel);background:var(--stub);
+    color:var(--ink);font-family:var(--font-body);font-size:1rem;
+  }
+  .row{display:flex;gap:10px;}
+  .row > *{flex:1;}
+  .item-card{
+    border:1px solid var(--steel);padding:14px;margin-bottom:12px;background:var(--stub);
+    position:relative;
+  }
+  .item-card .del{
+    position:absolute;top:10px;right:10px;background:none;border:none;
+    color:var(--rust);font-size:1.1rem;cursor:pointer;
+  }
+  .toggles{display:flex;gap:18px;margin-top:6px;font-size:0.9rem;}
+  .toggles label{display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:0.9rem;color:var(--ink);}
+  .add-btn{
+    width:100%;padding:12px;border:1px dashed var(--steel);background:transparent;
+    color:var(--steel);font-family:var(--font-body);cursor:pointer;margin-bottom:24px;
+  }
+  .section-title{font-family:var(--font-display);font-size:1.15rem;font-weight:700;margin:26px 0 12px;border-bottom:1px solid var(--ink);padding-bottom:6px;}
+  .publish-box{
+    margin-top:30px;padding:18px;border:2px solid var(--ink);background:var(--stub);
+  }
+  .publish-box p{font-size:0.85rem;color:var(--steel);margin-top:0;}
+  .publish-btn{
+    width:100%;padding:15px;background:var(--ink);color:var(--paper);border:none;
+    font-weight:600;font-size:1rem;cursor:pointer;margin-top:10px;
+  }
+  .publish-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .status{margin-top:12px;font-size:0.85rem;padding:10px;display:none;}
+  .status.ok{display:block;background:#E8F3E9;color:var(--good);border:1px solid var(--good);}
+  .status.err{display:block;background:#FBEAE7;color:var(--bad);border:1px solid var(--bad);}
+  select{padding:10px;border:1px solid var(--steel);background:var(--stub);font-family:var(--font-body);font-size:1rem;width:100%;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Menu Setting</h1>
+  <div class="sub">Update today's board — this publishes straight to the live site.</div>
+</header>
+
+<section>
+  <div class="field">
+    <label for="chefPickSelect">Today's special</label>
+    <select id="chefPickSelect"><option value="">— pick after adding items —</option></select>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label for="phoneInput">WhatsApp number (country code, no +)</label>
+      <input type="text" id="phoneInput" placeholder="918106799883">
+    </div>
+  </div>
+  <div class="field">
+    <label for="slotsInput">Pickup time slots (comma separated)</label>
+    <input type="text" id="slotsInput" placeholder="12:30 PM, 1:00 PM, 1:30 PM">
+  </div>
+
+  <div class="section-title">Breakfast counter</div>
+  <div id="breakfastItems"></div>
+  <button class="add-btn" id="addBreakfast">+ Add breakfast item</button>
+
+  <div class="section-title">Lunch counter</div>
+  <div id="lunchItems"></div>
+  <button class="add-btn" id="addLunch">+ Add lunch item</button>
+
+  <div class="publish-box">
+    <label for="tokenInput">GitHub token (entered fresh each time, never saved)</label>
+    <input type="password" id="tokenInput" placeholder="paste your PAT here">
+    <p>This publishes menu-today.json directly to the live site. The token is used only for this one action and isn't stored anywhere.</p>
+    <button class="publish-btn" id="publishBtn">Publish today's menu</button>
+    <div class="status" id="statusBox"></div>
+  </div>
+</section>
+
+<script>
+const REPO = 'legaleagles/CurryPot';
+const FILE_PATH = 'menu-today.json';
+
+let itemCounter = 0;
+
+function itemCardHTML(section, name='', price='', veg=true, available=true){
+  const id = 'item_' + (itemCounter++);
+  return `
+    <div class="item-card" data-id="${id}" data-section="${section}">
+      <button class="del" onclick="this.closest('.item-card').remove(); refreshChefPickOptions();">&times;</button>
+      <div class="field">
+        <label>Item name</label>
+        <input type="text" class="f-name" value="${name}" oninput="refreshChefPickOptions()">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Price (₹)</label>
+          <input type="number" class="f-price" value="${price}">
+        </div>
+      </div>
+      <div class="toggles">
+        <label><input type="checkbox" class="f-veg" ${veg ? 'checked' : ''}> Veg</label>
+        <label><input type="checkbox" class="f-available" ${available ? 'checked' : ''}> Available today</label>
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('addBreakfast').addEventListener('click', () => {
+  document.getElementById('breakfastItems').insertAdjacentHTML('beforeend', itemCardHTML('breakfast'));
+});
+document.getElementById('addLunch').addEventListener('click', () => {
+  document.getElementById('lunchItems').insertAdjacentHTML('beforeend', itemCardHTML('lunch'));
+});
+
+// seed with today's current items so you're editing, not starting blank
+const seedBreakfast = [
+  {name:'Idly', price:40, veg:true, available:true},
+  {name:'Ghee Karam Idly', price:60, veg:true, available:true},
+  {name:'Vada', price:35, veg:true, available:true},
+  {name:'Masala Dosa', price:70, veg:true, available:false},
+];
+const seedLunch = [
+  {name:'Chicken Dum Biryani', price:180, veg:false, available:true},
+  {name:'Egg Biryani', price:120, veg:false, available:true},
+  {name:'Paneer Biryani', price:140, veg:true, available:true},
+  {name:'Sambar (bowl)', price:40, veg:true, available:true},
+];
+seedBreakfast.forEach(i => document.getElementById('breakfastItems').insertAdjacentHTML('beforeend', itemCardHTML('breakfast', i.name, i.price, i.veg, i.available)));
+seedLunch.forEach(i => document.getElementById('lunchItems').insertAdjacentHTML('beforeend', itemCardHTML('lunch', i.name, i.price, i.veg, i.available)));
+document.getElementById('phoneInput').value = '918106799883';
+document.getElementById('slotsInput').value = '12:30 PM, 1:00 PM, 1:30 PM, 2:00 PM';
+
+function slugify(name){
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+function collectItems(sectionId){
+  return [...document.getElementById(sectionId).querySelectorAll('.item-card')].map(card => {
+    const name = card.querySelector('.f-name').value.trim();
+    const price = parseInt(card.querySelector('.f-price').value, 10) || 0;
+    const veg = card.querySelector('.f-veg').checked;
+    const available = card.querySelector('.f-available').checked;
+    return { id: slugify(name), name, price, img: '', veg, available };
+  }).filter(i => i.name);
+}
+
+function refreshChefPickOptions(){
+  const all = [...collectItems('breakfastItems'), ...collectItems('lunchItems')];
+  const select = document.getElementById('chefPickSelect');
+  const current = select.value;
+  select.innerHTML = '<option value="">— none —</option>' + all.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+  if(all.some(i => i.id === current)) select.value = current;
+}
+refreshChefPickOptions();
+document.getElementById('breakfastItems').addEventListener('input', refreshChefPickOptions);
+document.getElementById('lunchItems').addEventListener('input', refreshChefPickOptions);
+
+function todayISO(){
+  return new Date().toISOString().slice(0,10);
+}
+
+async function publish(){
+  const statusBox = document.getElementById('statusBox');
+  statusBox.className = 'status';
+  const token = document.getElementById('tokenInput').value.trim();
+  if(!token){
+    statusBox.className = 'status err';
+    statusBox.textContent = 'Paste a GitHub token first.';
+    return;
+  }
+
+  const data = {
+    date: todayISO(),
+    chefPick: document.getElementById('chefPickSelect').value,
+    phoneWhatsApp: document.getElementById('phoneInput').value.trim(),
+    pickupSlots: document.getElementById('slotsInput').value.split(',').map(s => s.trim()).filter(Boolean),
+    breakfast: collectItems('breakfastItems'),
+    lunch: collectItems('lunchItems'),
+  };
+
+  const jsonText = JSON.stringify(data, null, 2);
+  const btn = document.getElementById('publishBtn');
+  btn.disabled = true;
+  btn.textContent = 'Publishing...';
+
+  try {
+    // get current file SHA (required by GitHub API to update a file)
+    const getRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
+    });
+    if(!getRes.ok) throw new Error('Could not read current menu file (' + getRes.status + '). Check the token has access to ' + REPO + '.');
+    const getData = await getRes.json();
+    const sha = getData.sha;
+
+    const putRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' },
+      body: JSON.stringify({
+        message: 'Update today\'s menu — ' + todayISO(),
+        content: btoa(unescape(encodeURIComponent(jsonText))),
+        sha: sha,
+      })
+    });
+    if(!putRes.ok){
+      const err = await putRes.json().catch(() => ({}));
+      throw new Error(err.message || ('Publish failed (' + putRes.status + ')'));
+    }
+
+    statusBox.className = 'status ok';
+    statusBox.textContent = 'Published! The live site will update in a minute or two.';
+    document.getElementById('tokenInput').value = '';
+  } catch(err){
+    statusBox.className = 'status err';
+    statusBox.textContent = err.message || 'Something went wrong.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Publish today\'s menu';
+  }
+}
+
+document.getElementById('publishBtn').addEventListener('click', publish);
+</script>
+</body>
+</html>
